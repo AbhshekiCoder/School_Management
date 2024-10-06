@@ -415,6 +415,53 @@ app.post('/video', (req, res)=>{
 
 
 })
+app.post('/search', (req, res)=>{
+  let {input} = req.body;
+  console.log(input)
+    const client = new MongoClient(url);
+  const db = client.db("School_Management");
+  const collection = db.collection("courses");
+
+  collection.findOne({name: input}).then(result=>{
+    res.send(result);
+    
+   
+
+  })
+
+
+});
+app.post('/course_detail_topics', (req, res)=>{
+  let {id} = req.body;
+ 
+    const client = new MongoClient(url);
+  const db = client.db("School_Management");
+  const collection = db.collection("modules");
+
+  collection.find({topic_id: id}).toArray().then(result=>{
+    res.send(result);
+    
+   
+
+  })
+
+
+});
+app.post('/course_syllabus_details', (req, res)=>{
+  let {name} = req.body;
+ 
+    const client = new MongoClient(url);
+  const db = client.db("School_Management");
+  const collection = db.collection("videos");
+
+  collection.find({topic_id: name}).toArray().then(result=>{
+    res.send(result);
+    
+   
+
+  })
+
+})
 app.get('/', (req, res)=>{
     res.send("<h1>hello</h1>")
 })

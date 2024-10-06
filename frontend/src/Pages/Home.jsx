@@ -2,7 +2,7 @@
 
 import 'rsuite/dist/rsuite.min.css';
 import {Message, Loader} from 'rsuite';
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import wave_hand from '../Assets/waving-hand.svg';
 import trending_img from '../Assets/Screenshot_27-7-2024_122136_internshala.com.jpeg';
 import java from '../Assets/java.png';
@@ -19,11 +19,16 @@ import {Navigation, Pagination, Scrollbar} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/swiper-bundle.css';
 import 'swiper/css/pagination';
+import axios from 'axios';
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom';
 
 
 
 
 function Home(){
+    let [data , setData] = useState();
+    let [input, setInput] = useState();
+    let navigate = useNavigate();
     useEffect(()=>{
         document.querySelector('.btn').style.display = "block";
         document.getElementById('navbar').style.display = "block";
@@ -31,15 +36,21 @@ function Home(){
             
     },[])
 
-    function Search(e){
-        let data = e.target.value;
-      let title =   data.toUpperCase();
-      let result = axios.post('http://localhost:5000/search', {title}).then(result =>{
-        console.log(result.data);
-      })
+    function Input(e){
+        let title = e.target.value;
+      
+       setInput(title);
 
     }
+    function Search(){
+        
+        let result = axios.post('http://localhost:5000/search', {input}).then(result =>{
+            localStorage.setItem("data", JSON.stringify(result.data));
+            navigate('/Course-Detail');
 
+          })
+    }
+     
     
     
     
@@ -81,7 +92,7 @@ function Home(){
         </div>
 
         <div className='search max-w-96 mt-9  h-10 flex bg-gray-100 border'>
-        <input type='text'  placeholder='search like butterfly' className='w-full  h-full bg-gray-100' onChange = {Search}/><i class="fa-solid fa-magnifying-glass flex items-center text-2xl  p-2 "></i>
+        <input type='text'  placeholder='search like butterfly' className='w-full  h-full bg-gray-100' onChange = {Input}/><i class="fa-solid fa-magnifying-glass flex items-center text-2xl  p-2 " onClick={Search}></i>
 
         </div>
 

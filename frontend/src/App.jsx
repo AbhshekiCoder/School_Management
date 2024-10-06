@@ -22,6 +22,7 @@ import  PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 import Courses from './Pages/Courses';
 import Video from './Pages/Video';
+import Course_Detail from './Pages/Course_Detail';
 
 function App() {
 let [userinfo, setUserInfo] = useState();
@@ -129,8 +130,8 @@ useEffect(()=>{
    <Route path='/Dashboard' element={<Dashboard/>}></Route>
    <Route path='/Courses' element={<Courses role={userinfo?userinfo.role:''}/>}></Route>
    <Route path='/Video' element={<Video role={userinfo?userinfo.role:''}/>}></Route>
+   <Route path='/Course-Detail' element={<Course_Detail role={userinfo?userinfo.role:''}/>}></Route>
    
-
   
 
 
