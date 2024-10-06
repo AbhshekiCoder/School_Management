@@ -1,0 +1,10 @@
+
+.slider_item{
+    width: 350px;
+}
+.slider_item:hover{
+    width: 370px ;
+    cursor: pointer;
+    height: 270px;
+
+}
