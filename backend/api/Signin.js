@@ -49,6 +49,7 @@ Router.post('/Signin', async(req, res)=>{
             success: "signin Success",
             token: token,
             email: email,
+            name: result[0].name
     
            });
 

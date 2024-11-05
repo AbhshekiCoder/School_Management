@@ -20,19 +20,21 @@ import 'swiper/css';
 import 'swiper/swiper-bundle.css';
 import 'swiper/css/pagination';
 import axios from 'axios';
-import { useLocation, useNavigate, useNavigation } from 'react-router-dom';
+import { useLocation, useNavigate, useNavigation, Link } from 'react-router-dom';
+import Header from '../Components/Header';
 
 
 
 
-function Home(){
-    let [data , setData] = useState();
+function Home({user}){
+   
     let [input, setInput] = useState();
     let navigate = useNavigate();
     useEffect(()=>{
         document.querySelector('.btn').style.display = "block";
-        document.getElementById('navbar').style.display = "block";
-        document.querySelector('.sidebar').style.display = "block";
+        console.log(user);
+        document.getElementById("Navbar").style.display = "flex";
+     
             
     },[])
 
@@ -43,60 +45,113 @@ function Home(){
 
     }
     function Search(){
+        let user = JSON.parse(localStorage.getItem("token"));
+        let obj = {
+            email: user.email,
+            input: input
+        }
+        let result = axios.post('http://localhost:5000/search', obj).then(result =>{
+            console.log(result.data);
+             if(result.data == false){
+                localStorage.removeItem("data");
+                navigate('/Course-Detail');
+             }
+                
+             else{
+              
+                let obj = {
+                    detail: result.data.data.detail,
+                    name: result.data.data.name,
+                    price: result.data.data.price,
+                    _id: result.data.data._id,
+                    buy: result.data.buy
+                }
+                localStorage.setItem("data", JSON.stringify(obj));
+                navigate('/Course-Detail');
+
+             }
+
+             
+                
+    
+
+            
+          
+          
+    })
+}
+
+    function course(e){
         
-        let result = axios.post('http://localhost:5000/search', {input}).then(result =>{
-            localStorage.setItem("data", JSON.stringify(result.data));
-            navigate('/Course-Detail');
+        if(e.key == "Enter"){
+            let user = JSON.parse(localStorage.getItem("token"));
+            let obj = {
+                email: user.email,
+                input: input
+            }
+        let result = axios.post('http://localhost:5000/search', obj).then(result =>{
+                
+                  if(result.data == false){
+                    localStorage.removeItem("data");
+                    navigate('/Course-Detail');
+                 }
+                    
+                 else{
+                  
+                    let obj = {
+                        detail: result.data.data.detail,
+                        name: result.data.data.name,
+                        price: result.data.data.price,
+                        _id: result.data.data._id,
+                        buy: result.data.buy
+                    }
+                    localStorage.setItem("data", JSON.stringify(obj));
+                    navigate('/Course-Detail');
+    
+                 }
+    
+            
 
           })
+
+        }
     }
-     
+
+    function left(){
+        document.querySelector('.course-container').scrollLeft += 390;
+
+    }
+    function right(){
+        document.querySelector('.course-container').scrollLeft -= 390;
+
+
+    }
+    let courses = document.getElementsByClassName("course-item")
+   
+
+
     
     
     
   
     return(
         <>
-        <div className='w-full h-full' style={{backgroundColor: "#e3fafa"}}>
+         
+        <div className='w-full h-full '>
         <div className='modal w-44 h-16 btn z-10'>
              <button  className='flex  justify-around w-full h-full text-white items-center'><i class="fa-solid fa-headset"></i><div>Support</div><i class="fa-solid fa-angle-up"></i></button>
 
         </div>
        
-        <div className=' pl-40 max-[786px]:pl-0 mt-3'>
+        <div className='  max-[786px]:pl-0 mt-3'>
         <div className=' max-w-6xl m-auto mt-36  '>
-        <div class = "ads-modal max-w-6xl m-auto ">
-            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner max-w-6xl  h-96">
-                  <div class="carousel-slider_item active  object-cover">
-                   <img src ={persoinality_devlopment}  class = "d-block w-100 object-cover"/>
-                       
-                  </div>
-                  <div class="carousel-slider_item  object-cover">
-                    <img src={project} class="d-block w-100  object-cover" alt="..."/>
-                  </div>
-                  <div class="carousel-slider_item  object-cover">
-                    <img src= {webdevlopment} class="d-block w-100 " alt="..."/>
-                  </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-                </button>
-              </div>
+         {user?<h1 className=' text-3xl font-bold grid justify-center mt-16 font-serif max-md:text-2xl max-sm:text-xl text-center'>Hii, {user.name}<p className='font-light text-xl mt-3'>Let’s help you land your dream career</p></h1>:<h1 className=' text-5xl font-bold flex justify-center mt-16 font-serif max-md:text-3xl max-sm: text-2xl text-center'>Make your dream career a reality</h1>} 
+        <div className='search max-w-96 mt-10 h-10 flex bg-gray-100 '>
+        <input type='text'  placeholder='search like butterfly' className='w-full  h-full bg-gray-100' onChange = {Input}  onKeyDown={course} /><i class="fa-solid fa-magnifying-glass flex items-center text-2xl  p-2 " onClick={Search}></i>
 
         </div>
 
-        <div className='search max-w-96 mt-9  h-10 flex bg-gray-100 border'>
-        <input type='text'  placeholder='search like butterfly' className='w-full  h-full bg-gray-100' onChange = {Input}/><i class="fa-solid fa-magnifying-glass flex items-center text-2xl  p-2 " onClick={Search}></i>
-
-        </div>
-
-        <div className='mt-3'>
+        <div className='mt-16'>
         <div className='flex w-fit m-auto '>
         <div className='flex'>
         <p className='text-2xl font-bold'>Trending on Edureta</p> <img src = {trending_img} className='ml-3' style={{backgroundColor: "#e3fafa"}}/> 
@@ -111,104 +166,54 @@ function Home(){
 
         </div>
 
-        <Swiper className='swiper  mt-3 max-[786px]:hidden pb-9 ' pagination = {{clickable: true}} modules={[Pagination,Navigation]} slidesPerView={3} spaceBetween={30} >
-        <SwiperSlide>
-        <div className='slider_item   h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {java}/>
+        <div className='courses '>
+        
+        
+        <div className='course-container   '>
+        <div className='left-arrow  rounded-circle' onClick={left}>
+        <i class="fa-solid fa-arrow-right text-xl rounded-circle  "></i>
+        </div>
+        <div className='right-arrow rounded-circle ' onClick={right}>
+        <i class="fa-solid fa-arrow-left text-xl rounded-circle"></i>
+        </div>
+        
+
+        <div className='course-item  rounded-xl' >
+        <img className = ' rounded-xl' src = {react} />
+
+        </div>
+        <div className='course-item  rounded-xl'>
+        <img className = ' rounded-xl' src = {webdevlopment} />
+
+        </div>
+        <div className='course-item  rounded-xl' >
+        <img className = ' rounded-xl' src = {java}/>
+
+        </div>
+        <div className='course-item  rounded-xl'>
+        <img className = ' rounded-xl' src = {bussiness_training} />
+
+        </div>
+        <div className='course-item  rounded-xl' >
+        <img className = ' rounded-xl' src = {finanancle} />
+
+        </div>
+        <div className='course-item  rounded-xl' >
+        <img className = ' rounded-xl' src = {persoinality_devlopment} />
+
         </div>
 
-        </SwiperSlide>
-        <SwiperSlide>
-        <div className='slider_item   h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {react}/>
+
+
+
+
+
         </div>
-
-        </SwiperSlide>
        
-        <SwiperSlide>
-        <div className='slider_item   h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {bussiness_training}/>
         </div>
-
-        </SwiperSlide>
-       
-        <SwiperSlide>
-        <div className='slider_item   h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {persoinality_devlopment}/>
-        </div>
-
-        </SwiperSlide>
-       
-        <SwiperSlide>
-        <div className='slider_item   h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {finanancle}/>
-        </div>
-
-        </SwiperSlide>
-        <SwiperSlide>
-        <div className='slider_item   h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {project}/>
-        </div>
-
-        </SwiperSlide>
-       
-       
-       
-
       
-        </Swiper>
-        <Swiper className='swiper hidden mt-3 max-[786px]:block ' pagination = {{clickable: true}} modules={[Pagination,Navigation]} slidesPerView={1} spaceBetween={30} >
-        <SwiperSlide>
-        <div className='slider_item h-64  ' >
-            <img  className='w-full h-full  rounded-2xl' src = {java}/>
-        </div>
-
-        </SwiperSlide>
-        <SwiperSlide>
-        <div className='slider_item  h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {react}/>
-        </div>
-
-        </SwiperSlide>
-       
-        <SwiperSlide>
-        <div className='slider_item  h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {bussiness_training}/>
-        </div>
-
-        </SwiperSlide>
-       
-        <SwiperSlide>
-        <div className='slider_item  h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {persoinality_devlopment}/>
-        </div>
-
-        </SwiperSlide>
-       
-        <SwiperSlide>
-        <div className='slider_item  h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {finanancle}/>
-        </div>
-
-        </SwiperSlide>
-        <SwiperSlide>
-        <div className='slider_item  h-64'>
-            <img  className='w-full h-full  rounded-2xl' src = {project}/>
-        </div>
-
-        </SwiperSlide>
-       
-       
-       
-
-      
-        </Swiper>
-
       
 
-      
-
-
         </div>
 
         </div>
@@ -216,9 +221,9 @@ function Home(){
        
 
         </div>
-          
-       
-       
+        
+
+        
         
 
           

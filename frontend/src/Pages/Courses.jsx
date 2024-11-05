@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import '../style.css/courses.css';
 import axios from "axios";
+import Navbar from "../Components/Navbar";
+import Sidebar from "../Components/Sidebar";
 
 
 function Courses({role}){
@@ -12,8 +14,10 @@ function Courses({role}){
     let [file, setFile] = useState();
     useEffect(()=>{
         document.querySelector('.btn').style.display = "block";
-        document.getElementById('navbar').style.display = "block";
+    
         document.querySelector('.sidebar').style.display = "block";
+        document.getElementById('Navbar').style.display = "none";
+
 
             
     },[])
@@ -46,12 +50,14 @@ function Courses({role}){
     let from = document.forms['courses'];
     let name = from.title.value;
     let price = from.price.value;
-    let detail = from.details.value;
+    let detail = from.detail.value;
+    let duration = from.duration.value;
     console.log(name);
     let data = {
       name: name,
       price: price,
-      detail: detail
+      detail: detail,
+      duration: duration
     }
     let result = axios.post('http://localhost:5000/courses', data).then(result =>{
       alert(result.data);
@@ -105,6 +111,7 @@ function syllabus_submit(){
     formData.append("title", title);
     formData.append("topic_id", topic);
     formData.append("type", file.type);
+    formData.append("course_id", id);
     let result = axios.post('http://localhost:5000/topic_submit', formData).then((result)=>{
         alert(result.data);
        
@@ -124,6 +131,8 @@ function btn(){
 }
     return(
         <>
+        <Sidebar/>
+         <Navbar />
          <div className='modal w-44 h-16 btn z-10'>
              <button  className='flex  justify-around w-full h-full text-white items-center'><i class="fa-solid fa-headset"></i><div>Support</div><i class="fa-solid fa-angle-up"></i></button>
 
@@ -169,6 +178,8 @@ function btn(){
        
 
             </div>
+        {
+            /**  
         <div className="course-form modal w-full h-full">
        
        <form class="row g-3 " id = "course-form" name="courses" >
@@ -197,6 +208,51 @@ function btn(){
     
        </form>
         </div>
+        */
+        }
+        <div className="course-form modal w-screen h-screen z-10">
+        <div className = "border mt-20 m-auto p-10 bg-white" style={{width:'400px',fontSize:'18px'}}>
+        <div className="flex justify-end"><i className='fa-solid fa-circle-xmark hover:text-xl' onClick={course_modal}></i></div>
+
+<form name="courses">
+    <div>
+    <label htmlFor="" > Enter the Course Title</label><br />
+    <input type="text" name = "title"  id = "formInput" placeholder="Title"    />
+    </div>
+
+    <div>
+    <label htmlFor=""  >Enter Course Description</label><br />
+    <textarea type=" " name = "detail" id = "formInput" placeholder='Description' />
+    </div>
+    
+    <div>
+    <label htmlFor=""  >Enter Course Price</label><br />
+    <input type="number" name = "price" id = "formInput" placeholder='Price' />
+    </div>
+    <div>
+    <label htmlFor="" >Choose the Duration of the course</label><br />
+    <select  name = "duration" id = "formInput">
+        <option value="2 Weeks">2 Weeks</option>
+        <option value="4 Weeks">4 Weeks</option>
+        <option value="6 Weeks">6 Weeks</option>
+        <option value="8 Weeks">8 Weeks</option>
+        <option value="12 Weeks">12 Weeks</option>
+        <option value="16 Weeks">16 Weeks</option>
+    </select>
+    </div>
+   
+
+</form>
+<div className="w-full bg-sky-600 text-white flex justify-center items-center h-9 " onClick={course} >
+      submit
+  </div>
+
+
+
+</div>
+
+        </div>
+       
     <div className="topic_form modal">
     <div className="m-auto h-fit w-96">
     <form id = "topic-form1 " className="w-full h-fit bg-white p-3" name="topic-form">   
@@ -236,7 +292,7 @@ function btn(){
 
 
     </div>
-        
+    
         </>
     )
 }

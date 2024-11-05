@@ -1,7 +1,7 @@
 import Sidebar from './Components/Sidebar';
 import Signup from './Pages/Signup';
 import './style.css/pages_common.css';
-import { Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { Router, Route, Routes, useNavigate, json } from 'react-router-dom';
 import Home from './Pages/Home';
 import Navbar  from './Components/navbar';
 import Teachers from './Pages/Teachers';
@@ -20,14 +20,22 @@ import { Loader } from 'rsuite';
 import { ProfileProvider } from './context/profilecontext';
 import  PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
+
 import Courses from './Pages/Courses';
 import Video from './Pages/Video';
 import Course_Detail from './Pages/Course_Detail';
+import Qr from './Pages/Qr';
+import Profile from './Components/Profile';
+import Header from './Components/Header';
+import Dashboard1 from './Pages/Dashboard1';
 
 function App() {
 let [userinfo, setUserInfo] = useState();
 let [login, setLogin] = useState(false);
+let [user, setUser] = useState(false);
 let location = useNavigate();
+let [title, setTitle] = useState();
+
 
  useEffect(()=>{
   
@@ -46,7 +54,7 @@ let location = useNavigate();
  })
  let userid = JSON.parse(localStorage.getItem('token'));
  if(userid){
-   let email = userid[0].email;
+   let email = userid.email;
   
 
    let result = axios.post('http://localhost:5000/role', {email: email}).then(function(result){
@@ -54,13 +62,29 @@ let location = useNavigate();
       console.log(userinfo)
       
    })
+   let array = userid.name.split(" ");
+let string = array[0];
+let title =  string.slice(0, 1);
+setTitle(title);
   
   
  }
   
 
+setUser(JSON.parse(localStorage.getItem('token')));
+setTimeout(()=>{
+  setLogin(false);
+  localStorage.removeItem("token");
+  location('/');
+  window.location.reload();
+  
 
- 
+
+
+},3600000)
+
+
+
  
 
  },[])
@@ -75,19 +99,23 @@ let location = useNavigate();
    }
 
    let result = axios.post("http://localhost:5000/Signin",  data).then(function (result){
-       localStorage.setItem("token", JSON.stringify([{token:result.data.token, email: result.data.email} ]));
+       localStorage.setItem("token", JSON.stringify({token:result.data.token, email: result.data.email, name: result.data.name} ));
        alert(result.data.success);
        let userid = JSON.parse(localStorage.getItem("token"));
 
-       axios.get('http://localhost:5000/token', {token:  userid[0].token});
+       axios.get('http://localhost:5000/token', {token:  userid.token});
        if(result.data.success == "signin Success"){
           
-        
+        setUser(JSON.parse(localStorage.getItem('token')));
             setLogin(true);
             console.log(login);
+          
+         
+         
+            location('/');
+          
 
-      
-          location('/');
+          window.location.reload();
          
 
          
@@ -102,47 +130,63 @@ let location = useNavigate();
  
   
 }
+ function Profile_Modal(){
+ document.getElementById("profile-modal").style.display = "block";
+ document.getElementById("profile_icon").classList.remove("fa-caret-down");
+ document.getElementById("profile_icon").classList.add("fa-caret-up")
  
-useEffect(()=>{
-   let userid = localStorage.getItem('token');
-   if(userid){
-      setLogin(true);
-   }
-   else{
-      setLogin(false);
-   }
+ 
+ }
+ function Profile_close(){
+  document.getElementById("profile-modal").style.display = "none";
+  document.getElementById("profile_icon").classList.add("fa-caret-down");
+ document.getElementById("profile_icon").classList.remove("fa-caret-up")
+ 
 
-}, [login])
+ }
+ function logout(){
+  localStorage.removeItem('token');
+  setUser(false);
+  location('/');
+  
+ 
+}
   
   return (
 
     <>
     
-    <Sidebar/>
-    <Navbar login={login}/>
+   
+   
     <Loading/>
+    <Header Profile_Modal = {Profile_Modal} user = {user} title={title}/>
     <ProfileProvider>
+    <Profile Profile_close={Profile_close} user = {user} logout={logout} role= {userinfo?userinfo.role:''}/>
     <Routes>
     <Route element = {<PrivateRoute/>}>
 
-    <Route path='/Teachers' element={<Teachers role={userinfo?userinfo.role:''}/>}></Route>
-    <Route path='/Student' element={<Student  role={userinfo?userinfo.role:''}/>}></Route>
-   <Route path='/Dashboard' element={<Dashboard/>}></Route>
-   <Route path='/Courses' element={<Courses role={userinfo?userinfo.role:''}/>}></Route>
+    
    <Route path='/Video' element={<Video role={userinfo?userinfo.role:''}/>}></Route>
-   <Route path='/Course-Detail' element={<Course_Detail role={userinfo?userinfo.role:''}/>}></Route>
+   <Route path='/Course-Detail' element={<Course_Detail role={userinfo?userinfo.role:''} user = {user}/>}></Route>
+   <Route path='/Qr' element={<Qr/>}></Route>
+   <Route path='/Dashboard1' element={<Dashboard1/>}></Route>
+   <Route path='/Teachers' element={<Teachers role={userinfo?userinfo.role:''}/>}></Route>
+   <Route path='/Student' element={<Student  role={userinfo?userinfo.role:''}/>}></Route>
+  <Route path='/Dashboard' element={<Dashboard role={userinfo?userinfo.role:''}/>}></Route>
+    <Route path='/Courses' element={<Courses role={userinfo?userinfo.role:''}/>}></Route>
    
   
 
 
     </Route>
      <Route element = {<PublicRoute/>}>
-     <Route path='/' element={<Home/>}></Route>
+     <Route path='/' element={<Home user = {user}/>}></Route>
      
      <Route path='/Login' element={<Login  next = {next}/>}></Route>
      <Route path='/Signup' element={<Signup/>}></Route>
 
      </Route>
+
      
     
       
@@ -151,7 +195,7 @@ useEffect(()=>{
      
 
     </ProfileProvider>
-     
+   
     </>
   
   )

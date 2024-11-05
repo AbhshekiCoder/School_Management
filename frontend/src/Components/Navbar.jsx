@@ -9,8 +9,7 @@ function Navbar({login}){
             setUserId(true);
             console.log("user")
         }
-    
-
+      
         
 
     },[])
@@ -39,7 +38,7 @@ function Navbar({login}){
     return(
         <>
         
-        <div className="  h-16 sticky-top text-gray-500  items-center   bg-white max-w-7xl ml-56  max-[1024px]:ml-0 max-[1024px]:w-full" id = "navbar"> 
+        <div className="  h-16 sticky-top z-10 text-gray-500  items-center   bg-white max-w-7xl ml-56  max-[1024px]:ml-0 max-[1024px]:w-full" id = "navbar"> 
          <div className="flex  h-full items-center justify-between">
          
          <div className="pl-3  h-full hidden " id = "sidebar_icon">
@@ -53,7 +52,7 @@ function Navbar({login}){
          <div className="flex  navbar " style={{paddingRight: "10%"}} >
          <i class="fa-solid fa-bell text-gray-500 text-2xl"></i>
          <div className="ml-5">
-         {login == true?<a href = "#" onClick={logout}>Log out</a>:<Link to = "/Login">Log in</Link> }
+         {userid == true?<a href = "#" onClick={logout}>Log out</a>:<Link to = "/Login">Log in</Link> }
            
          </div>
             

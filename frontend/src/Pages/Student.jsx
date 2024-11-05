@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../style.css/teachers.css';
 import bg from '../Assets/teac.png';
-import { setDate } from 'rsuite/esm/internals/utils/date';
+
 import { Loader } from 'rsuite';
 import { Message } from 'rsuite';
-import CameraRetroIcon from '@rsuite/icons/legacy/CameraRetro';
-import '../style.css/student.css'
+
+import '../style.css/student.css';
+import Sidebar from '../Components/Sidebar';
+import Navbar from '../Components/Navbar';
 
 
 function Student({role}){
@@ -15,7 +17,8 @@ function Student({role}){
     let [profile, setProfile] = useState();
     useEffect(()=>{
         document.getElementById('navbar').style.display = "block";
-        
+        document.getElementById('Navbar').style.display = "none";
+
     
         },[] )
        
@@ -189,7 +192,9 @@ function register_modal(){
   
     return(
         <>
-        <div className=' absolute w-fit   z-10  mt-6 message hidden  ' style={{marginLeft: "45%"}}>
+         <Sidebar/>
+         <Navbar />
+        <div className=' absolute w-fit   z-10  mt-6 message hidden  ' style={{marginLeft: "45%"}} >
         <Message type="success">
             <strong id = "message"></strong>
          </Message>;
@@ -311,7 +316,7 @@ function register_modal(){
        
 
 
-        <div className = "stu-form  border modal w-full h-full" >
+        <div className = "stu-form  border modal  w-screen h-screen" >
         <form name = "form" onSubmit={submit} className=' max-w-4xl  h-fit p-3  z-10  bg-white form mt-0 m-auto'>
         <din className = "flex justify-end "><i className='fa-solid fa-circle-xmark hover:text-xl' onClick={register_modal}></i></din>
         <div className='flex justify-between '>

@@ -7,16 +7,26 @@ function Video(){
     let [topic, setTopic] = useState();
     let [video, setVideo] = useState();
     useEffect(()=>{
-        document.getElementById('navbar').style.display = "block";
+        let id = localStorage.getItem("topic_id");
+       
       
-        let result = axios.post('http://localhost:5000/modules').then(result =>{
+        let result = axios.post('http://localhost:5000/modules',{id}).then(result =>{
             setModules(result.data);
             console.log(result.data)
             
            
         })
 
+        setTimeout(()=>{
+            document.querySelector('.arrow').style.display = "block";
 
+        },2000)
+
+        setTimeout(()=>{
+            document.querySelector('.arrow').style.display = "none";
+
+        },9000)
+      
         
     
         },[] )
@@ -53,6 +63,7 @@ function Video(){
 
         },[topic]);
        function fetch_video(e) {
+        setVideo("");
             let id = e;
             console.log(id)
             let result = axios.post('http://localhost:5000/video', {id}).then(result =>{
@@ -66,8 +77,11 @@ function Video(){
         }
     return(
         <>
-        <div className="container max-w-6xl ml-64 row "  >
-        <div className="col-md max-w-64 border overflow-y-auto" style={{height: "600px"}}>
+        <div className=" absolute z-10 ml-36 mt-16 hidden arrow" style={{color: "rgb(232, 190, 172)"}}>
+        <i class="fa-solid fa-hand-middle-finger text-3xl"></i>
+       </div>   
+        <div className="container1  h-full border row "  >
+        <div className="col-md max-w-64 border  overflow-y-auto p-6" style={{height: "650px"}}>
         <h5 className="font-bold text-gray-500 text-xl  ">Module</h5>
         <select className="w-full h-10 mt-3" onChange={select_topic}>
             <option value="default">select modules</option>
@@ -101,16 +115,16 @@ function Video(){
 
 
         </div>
-        <div className="col-md border p-3">
+        <div className="col-md border p-3   flex justify-center">
         {video? video.map((Element)=>(
             <> 
-            {Element.type.includes("image")?<img src ={`data:${Element.type};base64,${Element.file}`} className="w-full h-full"/>: <video src = {`data:${Element.type};base64,${Element.file}`} className="w-full h-full " controls></video>}
+            {Element.type.includes("image")?<img src ={`data:${Element.type};base64,${Element.file}`} className=" max-w-4xl h-full"/>: <video src = {`data:${Element.type};base64,${Element.file}`} className="max-w-4xl h-full " controls></video>}
            
            
             </>
 
 
-        )):''}
+        )):<div className="flex justify-center w-full h-full items-center"><Loader speed = "normal"/></div>}
        
         </div>
 
@@ -121,7 +135,8 @@ function Video(){
 
        </div>
      
-       </div>       
+       </div>  
+         
 
         </>
     )

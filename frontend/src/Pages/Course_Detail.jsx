@@ -1,28 +1,85 @@
 import { useEffect, useState } from "react";
 import '../style.css/course_detail.css';
 import axios from "axios";
-function Course_Detail(){
-    let [data, setData] = useState();
-    let [title, setTitle] = useState();
-    let [topics, setTopics] = useState();
-    let [num, setNum] = useState(1);
-    useEffect(()=>{
-        let data1 = JSON.parse(localStorage.getItem("data"));
+import {loadStripe} from  '@stripe/stripe-js';
+import Header from "../Components/Header";
+import { Link, useNavigate } from "react-router-dom";
 
-        if(data1){
-            setData(data1);
+function Course_Detail({role, user}){
+    let [data, setData] = useState();
+    let [title, setTitle] = useState(false);
+   
+    let [topicid, setTopicId] = useState();
+    let [data1, setData1] = useState();
+
+    let navigate = useNavigate();
+    useEffect(()=>{
+        let data2 = JSON.parse(localStorage.getItem("data"));
+        
+        if(data2){
+            setData(data2);
+            setTitle(data2.buy)
+            let id = data2._id
+            setTopicId(id);
           
-        }
-        let id = data1._id
-        let result = axios.post('http://localhost:5000/course_detail_topics', {id}).then(result =>{
-            setTitle(result.data);
-            console.log(result.data)
+        let result1 = axios.post('http://localhost:5000/course_syllabus_details',{id}).then(result2 =>{
+           
+    
+            
+            let array = result2.data;
+            let array1 = [];
+            let prv  = 0;
+            console.log(result2.data)
+           
+            let name = -1;
+            for(let i = 0; i< array.length; i++){
+                if(array[i].topic_id != prv){
+                    name++;
+                    let obj = {
+                        title: [],
+                        name: array[i].topic_id
+                    }
+                    array1.push(obj);
+                    array1[name].title.push(array[i].name);
+                    
+                 
+                    console.log(name)
+                    
+                }
+                else{
+                     array1[name].title.push(array[i].name)
+                    
+
+                }
+                prv = array[i].topic_id;
+               
+            }
+            setData1(array1);
+            console.log(array1);
+            console.log(data1)
+          
+    
             
            
         })
+        
+        }
+
+        
+     
+        
+
+
+       
+       
+        
+      
 
     },[])
+     
+
     function read_more(){
+      
         document.getElementById("content-hide").style.maxHeight = "200px";
         document.querySelector('.read-more').style.display = "none";
         document.querySelector('.read-less').style.display = "block";
@@ -33,33 +90,84 @@ function Course_Detail(){
         document.querySelector('.read-less').style.display = "none";
 
     }
-   
-    function syllabus(e, id){
-        setNum(num + 1);
-        console.log(num);
-      let name = e;
-        let result = axios.post('http://localhost:5000/course_syllabus_details', {name}).then(result =>{
-            setTopics(result.data);
-            console.log(result.data);
-           
+ 
+    let num = 1;
+    let prev;
+    let next;
+    function syllabus(name){
+        num++;
+        if(num % 2 == 0){
+            
        
-           
-        })
-        if(num % 2 ==  0){
-            document.getElementById(id).style.maxHeight = "200px";
+                document.getElementById(name).style.height = "fit-content";
+
+
+
+
+
         }
         else{
-            document.getElementById(id).style.maxHeight = "0px";
-        }
+           
+                document.getElementById(name).style.height = "0px";
+
+            
             
 
+        }
+        
+       
     }
-    
+  
+    let payment = async()=>{
+        if(role == 'Teacher' || role == 'Admin'){
+            return;
+        }
+        if(!user){
+            console.log(user)
+            navigate('/Login');
+            
+        }
+       
+        let data = JSON.parse(localStorage.getItem("data"));
+        let user1 =JSON.parse(localStorage.getItem("token"));
+        let training = new Date();
+        console.log(training.getMonth())
+        let stripe =  await loadStripe("pk_test_51PauGq2Lcv7rdblxzjzMQaPLB5U41MemRItHaWFLUh3L9WkuYkkt4PUnxJTUDnmsY4brCiJcKBP8FOi0O1KNYEDj00LjmU5Y9H")
+        let obj = {
+            name: data.name,
+            price: data.price,
+            detail: data.detail,
+            email: user1.email,
+            id:  topicid
+
+        }
+        const response = await axios.post("http://localhost:5000/payment", obj).then((result1)=>{
+            console.log(result1.data);
+            stripe.redirectToCheckout({
+              sessionId: result1.data.id
+           
+             })
+             console.log(result1.data.data)
+             
+             let obj = {
+                email: result1.data.data,
+                name: result1.data.name,
+                id: topicid
+                
+             }
+             let array = JSON.parse(localStorage.getItem("order"))||[];
+             array.push(obj)
+             localStorage.setItem("order", JSON.stringify(array));
+             
+          });
+    }
+
     return(
         <>
+     
         {data?<div className="maincontainer h-full w-full">
         <div className=" max-w-5xl m-auto ">
-        <div class="course-intro">
+        <div class="course-intro mt-9">
             
             <div class="heading row">
                 <div class="intro-detail col-md">
@@ -89,12 +197,25 @@ function Course_Detail(){
                     </div>
                 </div>
                 <div class="col-md price flex justify-end">
-                    <div class="price-input">
+                 {title == true?<div className=" w-60 h-fit bg-white rounded-md p-3">
+                 <h1 className="font-bold text-xl">Continue to Dashboard</h1>
+                 <button className="p-2 bg-blue-500 rounded-xl text-white h-9 w-full mt-3 font-bold"><Link to = "/Dashboard1">Go To Dashboard</Link></button>
                     
-                        <h5>Training Price</h5>
-                        <div class="cost">{data.price}</div>
-                        <button>Pay now</button>
-                    </div>
+                 </div>:
+                 <div class="price-input">
+                       
+                          
+                       <h5>Training Price</h5>
+                     <div class="cost">{data.price}</div>
+                     <button onClick={payment}>Pay now</button>
+
+                       
+                        
+                         
+                     
+                    
+                 </div>}
+                    
 
                 </div>
                 
@@ -223,7 +344,7 @@ function Course_Detail(){
         </div>
         <div class="coursedetail row">
             <div class="col-md">
-                <h2 class="heading"><b className="text-2xl"> Learn Android APP Devlopment?</b></h2>
+                <h2 class="heading"><b className="text-2xl"> Learn {data.name}?</b></h2>
                 <div class="point">
                     <p class="sub-heading">Popularity</p>
                     <p class="description">With 2.6Mn apps on Play Store and 75 Billion downloads a year, Android App Development is one of the most popular skills today.</p>
@@ -243,7 +364,7 @@ function Course_Detail(){
             </div>
         </div>
         <div class="syllabus-conatiner">
-        <h1>Android APP Devlopment Training Syllabus</h1>
+        <h1>{data.name} Training Syllabus</h1>
        <div class="syllabus-content">
         <div class="syllabus-input">
         
@@ -257,8 +378,8 @@ function Course_Detail(){
        <h5>After completed an this syllabus you can download videos</h5>
        <div class="syllabus">
              {
-                title?title.map((Element)=>(
-                    <div class="introduction" id="intro1" syllabus_id="1" onClick={() =>syllabus(Element.name, Element._id)}>
+                data1?data1.map((Element)=>(
+                    <div class="introduction"  syllabus_id="1" onClick={() =>syllabus(Element.name)}>
             <div class="intro row">
                 <div class="col-5">
                      {Element.name}
@@ -274,7 +395,7 @@ function Course_Detail(){
             <div class="syllabus-content">
                                 <div class="syllabus-input">
                    
-                   <div class="content-icon"> <i class="fa fa-file-text-o"></i> </div>4 topics
+                   <div class="content-icon"> <i class="fa fa-file-text-o"></i> </div>{Element.title.length} topics
                     
                 
                 </div>
@@ -283,19 +404,24 @@ function Course_Detail(){
                     <div class="content-icon"><i class="fa fa-play-circle"></i> </div><span>2 video inside</span>
                 </div>
             </div>
-            <div class="syllabus-list" id = {Element._id}>
-                <ul type="point">
-                    <li>Training overview video</li>
-                    {topics?topics.map((Element)=>(
-                        <li>{Element.name}</li>
+            <div class="syllabus-list  " id = {Element.name}>
+                <ol type = "circle">
+                   
+                    {Element.title.map((Element)=>(
+                       
+                       <li className="mt-2 font-medium  text-lg   ">{Element}</li>
 
-                    )):''}
+                       
+                ))}
+                   
+                    
                                         
-                </ul>
+                </ol>
             </div>
-                </div>
+          
+                   </div>
 
-                )):''
+                )):<h1>loading...</h1>
              }
                
                 
@@ -324,8 +450,9 @@ function Course_Detail(){
 
         </div>
 
-        </div>:''}
-
+        </div>:<div className="flex justify-center font-bold text-3xl mt-60">This Course is not Avaliable</div>}
+      
+      
         </>
     )
 }

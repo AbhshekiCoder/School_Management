@@ -76,6 +76,21 @@ function Sidebar(){
                     <i className='fa fa-home'></i>
                 </div>
                 <div className='ml-3 item'  >
+                  <Link to = "/" >Home</Link>
+                </div>
+                <div className='w-full flex justify-end '  >
+                <i class="fa-solid fa-angle-right hidden"> </i>
+
+                </div>
+
+              
+
+                </div>
+                <div className='flex w-52 m-auto hover: h-9 items-center p-3 mt-3 item' item_id = "e" >
+                <div className=''>
+                    <i className='fa fa-home'></i>
+                </div>
+                <div className='ml-3 item'  >
                   <Link to = "/Courses" >Courses</Link>
                 </div>
                 <div className='w-full flex justify-end '  >

@@ -8,14 +8,11 @@ import { useNavigate, Link } from 'react-router-dom';
 
 
 function Login({next}){
-    
     useEffect(()=>{
-        document.getElementById("navbar").style.display = "none";
-        document.querySelector(".sidebar").style.display = "none";
-     
+        document.getElementById('Navbar').style.display = "none";
 
-
-    },[]);
+       },[])
+   
   
     return(
         <>

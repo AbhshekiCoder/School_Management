@@ -269,11 +269,11 @@ font-weight: bold;
 }
 .syllabus-list{
 overflow: hidden;
-max-height: 0;
+height: 0px;
 transition: max-height 0.5s;
 }
 .syllabus-list>ol>li{
-margin-top: 20px;
+margin-top: 10px;
 }
 .syllabuslist{
 max-height: 400px ;

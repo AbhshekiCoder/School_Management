@@ -1,11 +1,27 @@
-import { useEffect } from "react";
-import Sidebar from "../Components/Sidebar";
+import { useEffect, useState } from "react";
 
-function Dashboard(){
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../Components/Sidebar";
+import Navbar from "../Components/Navbar";
+
+function Dashboard({role}){
+    let [data, setData] = useState([]);
+    const array = [];
+    let navigate = useNavigate();
     useEffect(()=>{
+      
         document.getElementById("navbar").style.display = "none";
         document.querySelector(".sidebar").style.display = "block";
+        if(role == "Student"){
+            document.querySelector('.container1').style.display = "none";
+            document.querySelector('.student-dashboard').style.display = "block";
+            let user = JSON.parse(localStorage.getItem('order'));
+            setData(user);
+           
+        }
+         document.getElementById('Navbar').style.display = "none";
 
+       
     },[]);
     let num = 1;
     function sidebar(){
@@ -25,16 +41,28 @@ function Dashboard(){
      
 
     }
+    function syllabus(id){
+        localStorage.setItem("topic_id", id);
+        navigate('/Video');
+
+
+    }
+    
     return(
         <>
 
-
+       <Sidebar/>
+       <Navbar/>
 <div className='modal w-44 h-16 btn z-10'>
         <button  className='flex  justify-around w-full h-full text-white items-center'><i class="fa-solid fa-headset"></i><div>Support</div><i class="fa-solid fa-angle-up"></i></button>
 
     </div>
        
-        <div className = "header3">
+      
+      
+
+    <div className="   ">
+    <div className = "header3 ">
         <div className="header flex  justify-between  h-24 items-center header1 ">
        
         <div className="hidden pl-3 " id = "sidebar_icon">
@@ -60,7 +88,9 @@ function Dashboard(){
        
 
         </div>
-        <div className="container1   mt-16">
+        
+     </div>
+     <div className="container1   mt-16">
         <div className="w-fit m-auto ">
         <div className=" text-4xl font-sans font-semibold text-gray-600 max-md:text-3xl max-[479px]:text-2xl text-center" >
         Welcome to your dashboard, Udemy school
@@ -127,9 +157,33 @@ function Dashboard(){
 
         </div>
         
-        </div>
+     </div>
+     <div className="student-dashboard hidden max-w-3xl m-auto border p-3">
+     <table className="w-full">
+        <tr>
+            <th className=" font-bold text-lg">
+                name
+            </th>
+           
+            
+            <th className=" font-bold text-lg">
+                go to training
+            </th>
+        </tr>
+        {data?data.map((Element)=>(
+            <tr className="mt-3 p-3 h-10 border-b-2">
+                <td className="font-bold">{Element.name}</td>
+              
+                <td><button className=" w-36 h-9 bg-blue-500 text-white rounded-xl" onClick={()=>syllabus(Element.id)}>Go to Training</button></td>
+            </tr>
 
-        </div>
+        )):''}
+     </table>
+        
+     </div>
+ 
+
+    </div>
         
 
 

@@ -13,7 +13,11 @@ import { useState } from 'react';
 import { setDate } from 'rsuite/esm/internals/utils/date';
 let Signup = ()=>{
     let [data, setData] = useState(false);
-   
+   useEffect(()=>{
+    document.getElementById('Navbar').style.display = "none";
+
+
+   },[])
     function next(e){
         let form1 = document.querySelector(".form-item");
       
@@ -75,13 +79,7 @@ let Signup = ()=>{
         e.target.PreventDefault();
 
     }
-    useEffect(()=>{
-        document.getElementById("navbar").style.display = "none";
-        document.querySelector(".sidebar").style.display = "none";
-        
-
-    },[]);
-
+    
     let Signup = (e)=>{
       
         let form1 = document.querySelector(".form-item");
@@ -109,7 +107,7 @@ let Signup = ()=>{
     return(
         <>
         <div className=' absolute w-fit   z-10  mt-6 message hidden  ' style={{marginLeft: "45%"}}>
-        <Message type="warning">
+        <Message type="">
             <strong id = "message"></strong>
          </Message>;
      
@@ -145,7 +143,7 @@ let Signup = ()=>{
             <div type='submit'  onClick={next} className='w-full h-9 text-white flex justify-center items-center'style={{backgroundColor:"rgba(45, 136, 212, 1)"}}>Next</div>
         </div>
         <div className='flex justify-center  mt-5'>
-            Already have an account?<Link to = "/Signin" className='  text-blue-500'>Sign in</Link>
+            Already have an account?<Link to = "/Login" className='  text-blue-500'>Sign in</Link>
         </div>
         <div>
 
